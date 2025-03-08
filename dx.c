@@ -41,3 +41,36 @@ int main() {
     }
 
     log_event("Successfully attached to shared memory.");
+
+    while (1) {
+        sleep(5);
+        log_event("Checking for available actions...");
+
+        if (master->numDCs == 0) {
+            log_event("No active DCs found. DX exiting...");
+            break;
+        }
+
+        log_event("Selecting a random action...");
+        int action = rand() % 2;  // 0 = kill DC, 1 = delete queue
+
+        if (action == 0 && master->numDCs > 0) {
+            int targetDC = master->dcList[rand() % master->numDCs];
+            if (targetDC > 0) {
+                log_event("Sending SIGTERM to a DC process.");
+                kill(targetDC, SIGTERM);
+            }
+        }
+        else if (action == 1) {
+            log_event("Deleting message queue...");
+            msgctl(master->msgQueueID, IPC_RMID, NULL);
+            break;
+        }
+    }
+
+    log_event("DX Detaching from shared memory...");
+    shmdt(master);
+    log_event("DX Exiting.");
+    return 0;
+}
+
