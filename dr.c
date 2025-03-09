@@ -51,4 +51,33 @@ int main() {
 
     printf("Connected to message queue. Waiting for a message...\n");
 
-   
+    while (1) {
+
+        ssize_t bytesReceived = msgrcv(msgQueueID, &msg, sizeof(msg) - sizeof(long), 1, 0);
+
+        if (bytesReceived == -1) {
+            if (errno == EIDRM) {
+                printf("Message queue was deleted. DR shutting down...\n");
+                break;
+            }
+            perror("msgrcv failed");
+            exit(1);
+        }
+
+        printf("Message received from DC-%d: %s\n", msg.dcID, msg.data);
+
+        if (master->numDCs < 10) {
+            master->dcList[master->numDCs] = msg.dcID;
+            master->numDCs++;
+        }
+
+        printf("Updated shared memory: %d active DCs\n", master->numDCs);
+    }
+
+    shmdt(master);
+    shmctl(shmID, IPC_RMID, NULL);
+    msgctl(msgQueueID, IPC_RMID, NULL);
+
+    printf("DR cleanup complete. Exiting...\n");
+    return 0;
+}

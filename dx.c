@@ -27,6 +27,7 @@ void log_event(const char* message) {
 int main() {
     log_event("DX started. Trying to attach to shared memory...");
 
+    // Attach to shared memory
     int shmID = shmget(SHM_KEY, sizeof(MasterList), 0666);
     if (shmID == -1) {
         perror("shmget failed (is DR running?)");
@@ -73,4 +74,3 @@ int main() {
     log_event("DX Exiting.");
     return 0;
 }
-
