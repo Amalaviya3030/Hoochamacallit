@@ -20,9 +20,9 @@ typedef struct { //struct
 // PARAMETERS  : message 
 // RETURNS     : None
 
-void log_event(const char* message) {
+void log_event(const char *message) {
     printf("[DX] %s\n", message); //printing to console
-    FILE* logFile = fopen("/tmp/dataCorruptor.log", "a"); //appending the log message to the file 
+    FILE *logFile = fopen("/tmp/dataCorruptor.log", "a"); //appending the log message to the file 
     if (logFile) {
         fprintf(logFile, "%s\n", message);
         fclose(logFile);
@@ -50,8 +50,8 @@ int main() {
     // PARAMETERS  : shmID 
     // RETURNS     : Pointer to the shared memory 
 
-    MasterList* master = (MasterList*)shmat(shmID, NULL, 0);
-    if (master == (void*)-1) {
+    MasterList *master = (MasterList *)shmat(shmID, NULL, 0);
+    if (master == (void *)-1) {
         perror("shmat failed");
         exit(1);
     }
