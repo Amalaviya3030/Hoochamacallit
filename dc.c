@@ -22,3 +22,17 @@ int main() {
         perror("msgget failed");
         exit(1);
     }
+    printf("Message queue found with ID: %d\n", msgQueueID);
+
+    msg.msgType = 1;
+    msg.dcID = getpid(); // Send DC process ID
+    strcpy(msg.data, "Hello from DC");
+
+    if (msgsnd(msgQueueID, &msg, sizeof(msg) - sizeof(long), 0) == -1) {
+        perror("msgsnd failed");
+        exit(1);
+    }
+
+    printf("Message sent from DC-%d\n", msg.dcID);
+    return 0;
+}
